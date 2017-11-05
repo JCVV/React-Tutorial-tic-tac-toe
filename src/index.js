@@ -50,7 +50,8 @@ class Game extends React.Component {
                 lastClicked: null
             }],
             xIsNext: true,
-            stepNumber: 0
+            stepNumber: 0,
+            selectedItem: null
         };
     }
 
@@ -58,22 +59,16 @@ class Game extends React.Component {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
         const winner = calculateWinner(current.squares);
-        const moves = history.map((step, move) => {
-            const desc = move ?
-                'Go to move #' + move + ' last move done in ' + step.lastClicked:
-                'Go to game start';
-            return (
-                <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
-                </li>
-            );
-        });
+        const selected = this.state.selectedItem;
+        const moves = this.getMovesList(history, selected);
         let status;
+
         if (winner) {
             status = 'Winner: ' + winner;
         } else {
             status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
         }
+
         return (
         <div className="game">
             <div className="game-board">
@@ -108,10 +103,29 @@ class Game extends React.Component {
         });
     }
 
+    getMovesList(history, selected) {
+        return history.map((step, move) => {
+            let desc = move ?
+                'Go to move #' + move + ' last move done in ' + step.lastClicked:
+                'Go to game start';
+
+            if(move === selected) {
+                desc = <b>  {desc}  </b>;
+            }
+
+            return (
+                <li key={move}>
+                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
+                </li>
+            );
+        });
+    }
+
     jumpTo(step) {
         this.setState({
             stepNumber: step,
-            xIsNext: step%2 === 0
+            xIsNext: step%2 === 0,
+            selectedItem: step
         });
     }
 }
