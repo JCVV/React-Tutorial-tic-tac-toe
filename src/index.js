@@ -94,10 +94,9 @@ class Game extends React.Component {
         const current = history[history.length - 1];
         const squares = current.squares.slice();
         squares[i] = this.state.xIsNext ? 'X' : 'O';
-        let lastClicked;
-        let x = Math.trunc(i/3) + 1;
-        let y = i%3 + 1;
-        lastClicked = '(' + x + ',' + y + ')';
+        const x = Math.trunc(i/3) + 1;
+        const y = i%3 + 1;
+        const lastClicked = '(' + x + ',' + y + ')';
         
         this.setState({
             history: history.concat([{
