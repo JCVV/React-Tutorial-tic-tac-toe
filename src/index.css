@@ -37,6 +37,10 @@ ul {
     outline: none;
 }
 
+.square.winner {
+    background: rgb(113, 253, 113);
+}
+
 .kbd-navigation .square:focus {
     background: #ddd;
 }
