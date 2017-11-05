@@ -46,7 +46,8 @@ class Game extends React.Component {
             }],
             xIsNext: true,
             stepNumber: 0,
-            selectedItem: null
+            selectedItem: null,
+            reverseListOrder: false
         };
     }
 
@@ -73,6 +74,7 @@ class Game extends React.Component {
             </div>
             <div className="game-info">
             <div>{status}</div>
+            <button onClick={() => this.setState({reverseListOrder: !this.state.reverseListOrder})}>Reverse order</button>
             <ol>{moves}</ol>
             </div>
         </div>
@@ -99,21 +101,27 @@ class Game extends React.Component {
     }
 
     getMovesList(history, selected) {
-        return history.map((step, move) => {
-            let desc = move ?
-                'Go to move #' + move + ' last move done in ' + step.lastClicked:
+        const reverse = this.state.reverseListOrder;
+        let movesList = [];
+        for(let i = 0; i < history.length; i++) {
+            const step = history[i];
+            let desc = i ?
+                'Go to move #' + i + ' last move done in ' + step.lastClicked:
                 'Go to game start';
 
-            if(move === selected) {
-                desc = <b>  {desc}  </b>;
+            desc = (i === selected) ? desc = <b>{desc}</b> : desc;
+            
+            const moveElement = <li key={i}>
+                    <button onClick={() => this.jumpTo(i)}>{desc}</button>
+                </li>;
+            
+            if(reverse) {
+                movesList.unshift(moveElement);
+            } else {
+                movesList.push(moveElement);
             }
-
-            return (
-                <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
-                </li>
-            );
-        });
+        }
+        return movesList;
     }
 
     jumpTo(step) {
