@@ -9,7 +9,11 @@ class Game extends React.Component {
         this.state = {
             history: [{
                 squares: Array(9).fill(null),
-                lastClicked: null
+                lastClicked: {
+                    index: null,
+                    position: []
+                },
+                nextToDeleteIndex: null
             }],
             xIsNext: true,
             stepNumber: 0,
@@ -38,6 +42,7 @@ class Game extends React.Component {
             <Board
                 squares={current.squares}
                 onClick={(i) => this.handleClick(i)}
+                nextToDeleteIndex={current.nextToDeleteIndex}
                 winnerCells={winner.cells}/>
             </div>
             <div className="game-info">
@@ -51,18 +56,39 @@ class Game extends React.Component {
 
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
-        const current = history[history.length - 1];
+        const historyLength = history.length;
+        const current = history[historyLength - 1];
         const squares = current.squares.slice();
-        const x = Math.trunc(i/3) + 1;
-        const y = i%3 + 1;
-        const lastClicked = '(' + x + ',' + y + ')';
+        const x = Math.trunc(i/3);
+        const y = i%3;
+        let nextToDeleteIndex = null;
+        let lastClicked = {
+            index: i,
+            position: [x, y]
+        };
+
+        if(squares[i]) {
+            return;
+        }
+
+        if(historyLength > 5) {
+            const nextToDelete = history[historyLength - 5].lastClicked;
+            nextToDeleteIndex = nextToDelete.index;
+        }
+
+        if(historyLength > 6) {
+            const removeMovePosition = history[historyLength - 6].lastClicked;
+            const removeIndex = removeMovePosition.index;
+            squares[removeIndex] = null;
+        }
         
         squares[i] = this.state.xIsNext ? 'X' : 'O';
         
         this.setState(prevState => ({
             history: history.concat([{
                 squares: squares,
-                lastClicked: lastClicked
+                lastClicked: lastClicked,
+                nextToDeleteIndex: nextToDeleteIndex
             }]),
             xIsNext: !prevState.xIsNext,
             stepNumber: history.length
@@ -75,7 +101,7 @@ class Game extends React.Component {
         for(let i = 0; i < history.length; i++) {
             const step = history[i];
             let desc = i ?
-                'Go to move #' + i + ' last move done in ' + step.lastClicked:
+                'Go to move #' + i + ' last move done in ' + step.lastClicked.position:
                 'Go to game start';
 
             desc = (i === selected) ? desc = <b>{desc}</b> : desc;

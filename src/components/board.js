@@ -4,12 +4,14 @@ import Square from './square';
 class Board extends React.Component {
     
     renderSquare(i) {
-        const winner = this.props.winnerCells.includes(i);
+        const isNextToDelete = (i === this.props.nextToDeleteIndex);
+        const isWinner = this.props.winnerCells.includes(i);
         return <Square 
             key={i}
             value={this.props.squares[i]}
             onClick={() => this.props.onClick(i)}
-            winner={winner}/>;
+            isNextToDelete={isNextToDelete}
+            isWinner={isWinner}/>;
     }
 
     render() {

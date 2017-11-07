@@ -37,6 +37,10 @@ ul {
     outline: none;
 }
 
+.square.delete {
+    background: rgb(255, 138, 138);
+}
+
 .square.winner {
     background: rgb(113, 253, 113);
 }
