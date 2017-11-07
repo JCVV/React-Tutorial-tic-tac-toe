@@ -1,46 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
-
-function Square(props){
-    let className = ['square'];
-    if(props.winner) {
-        className.push('winner');
-    }
-    return(
-        <button className={className.join(' ')} onClick={props.onClick}>
-            {props.value}
-        </button>
-    );
-}
-  
-class Board extends React.Component {
-
-    renderSquare(i) {
-        const winner = this.props.winnerCells.includes(i);
-        return <Square 
-            key={i}
-            value={this.props.squares[i]}
-            onClick={() => this.props.onClick(i)}
-            winner={winner}/>;
-    }
-
-    render() {
-        let rows = [];
-
-        for(let x = 0; x < 3; x++){
-            let cells = [];
-            for(let y = 0; y < 3; y++){
-                let square = this.renderSquare(3 * x + y);
-                cells.push(square);
-            }
-            const row = <div key={x} className='board-row'> {cells} </div>
-            rows.push(row);
-        }
-
-        return rows;
-    }
-}
+import Board from './components/board';
+import './style/index.css';
 
 class Game extends React.Component {
     constructor(props){
@@ -81,7 +42,7 @@ class Game extends React.Component {
             </div>
             <div className="game-info">
             <div>{status}</div>
-            <button onClick={() => this.setState({reverseListOrder: !this.state.reverseListOrder})}>Reverse order</button>
+            <button onClick={() => this.setState(prevState => ({reverseListOrder: !prevState.reverseListOrder}))}>Reverse order</button>
             <ol>{moves}</ol>
             </div>
         </div>
@@ -92,19 +53,20 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
         const x = Math.trunc(i/3) + 1;
         const y = i%3 + 1;
         const lastClicked = '(' + x + ',' + y + ')';
         
-        this.setState({
+        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        
+        this.setState(prevState => ({
             history: history.concat([{
                 squares: squares,
                 lastClicked: lastClicked
             }]),
-            xIsNext: !this.state.xIsNext,
+            xIsNext: !prevState.xIsNext,
             stepNumber: history.length
-        });
+        }));
     }
 
     getMovesList(history, selected) {
